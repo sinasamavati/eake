@@ -125,7 +125,7 @@ help(Msg) ->
     help().
 
 help() ->
-    io:format("Eake :: a make-like tool for Erlang~n"),
+    io:format("Eake :: A make-like tool for Erlang~n"),
     Params = [
               {"", ""}
              ] ++ tasks(),

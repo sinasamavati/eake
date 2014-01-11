@@ -21,7 +21,7 @@ Example:
 %% Eakefile
 
 -description :: "Prints 'Hello, World!'".
-hello_world() ->
+'hello-world'() ->
     io:format("Hello, World!~n").
 
 -description :: "Echos an argument".
@@ -31,18 +31,18 @@ echo(Arg) ->
 
 ```
 $ eake
-Eake :: a make-like tool for Erlang
+Eake :: A make-like tool for Erlang
 
 Usage: ./eake [-h]
 
   -h, --help   Displays this message
 
-  hello_world  Prints 'Hello, World!'
+  hello-world  Prints 'Hello, World!'
   echo         Echos an argument
 
 ###
 
-$ eacke hello_world
+$ eake hello-world
 Hello, World!
 
 $ eake echo "hello everybody"
