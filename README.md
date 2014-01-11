@@ -14,7 +14,7 @@ Clone it and just run `make` then put the `eake` file in your `$PATH`.
 
 Writing a task is like a function definition, moreover, Eake lets you describe what a task does.
 
-Just touch a file with the name `Eakefile`, and use `-description :: "context...".` above the task to describe what it deos.
+Just touch a file with the name `Eakefile`, and use `-description :: "context...".` above the task definition to describe what it deos.
 
 Example:
 ```erlang
