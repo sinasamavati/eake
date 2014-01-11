@@ -15,9 +15,9 @@ main(Args) ->
                          {error, {Reason, Data}} ->
                              help(Reason, Data)
                      end,
+    maybe_help(Opts, Params),
     [H|TaskArgs] = Params,
     Task = list_to_atom(H),
-    maybe_help(Opts, Params),
     maybe_invalid(Task),
     erlang:apply(eake_tasks, Task, TaskArgs).
 
