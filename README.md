@@ -4,7 +4,7 @@ A make-like tool for Erlang.
 
 ## Why?
 
-Because invoking shell commands from Erlang is sometimes better than invoking Erlang several times from a Makefile.
+Because invoking shell commands from Erlang is sometimes better than booting/re-booting Erlang VM several times from a Makefile target.
 
 ## Installation
 
