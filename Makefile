@@ -3,11 +3,16 @@ CT_SUITES =
 
 .PHONY: all build
 
-all: app build
+all: deps compile build
 
 build:
 	escript build
 
+deps:
+	rebar get-deps
+
+compile:
+	rebar compile
 
 # github.com/extend/erlang.mk
 # Copyright (c) 2013, Loïc Hoguin <essen@ninenines.eu>
