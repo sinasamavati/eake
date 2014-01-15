@@ -5,10 +5,10 @@
 
 
 main([]) ->
-    compile_eake_tasks(),
+    maybe_compile(),
     help();
 main(Args) ->
-    compile_eake_tasks(),
+    maybe_compile(),
     {Opts, Params} = case getopt:parse(option_spec_list(), Args) of
                          {ok, Result} ->
                              Result;
@@ -21,16 +21,32 @@ main(Args) ->
     maybe_invalid(Task),
     erlang:apply(eake_tasks, Task, TaskArgs).
 
+%% compile Eakefile if it isn't compiled already
+maybe_compile() ->
+    case file:read_file("Eakefile") of
+        {ok, SourceBin} ->
+            Source = binary_to_list(SourceBin),
+            Hash = hash(Source),
+            EakefileBeam = filename:join("/tmp", Hash),
+            Existed = filelib:is_file(EakefileBeam),
+            if Existed =:= false ->
+                    compile_eake_tasks(Source);
+               true ->
+                    {ok, Bin} = file:read_file(EakefileBeam),
+                    code:load_binary(eake_tasks, "nofile", Bin)
+            end;
+        _ ->
+            nofile
+    end.
+
 %% compile Eakefile
-compile_eake_tasks() ->
+compile_eake_tasks(Source) ->
     {ok, MTs, _} = erl_scan:string("-module(eake_tasks).\n"),
     {ok, MF} = erl_parse:parse_form(MTs),
 
     {ok, ETs, _} = erl_scan:string("-compile(export_all).\n"),
     {ok, EF} = erl_parse:parse_form(ETs),
 
-    {ok, SourceBin} = file:read_file("Eakefile"),
-    Source = binary_to_list(SourceBin),
     STs = tokens(Source),
 
     %% add describe/1 by checking the description attribute
@@ -42,8 +58,9 @@ compile_eake_tasks() ->
     SF = walk_list(STs1, fun erl_parse:parse_form/1, []),
 
     {ok, eake_tasks, Bin} = compile:forms([MF, EF, DF] ++ SF),
-    code:load_binary(eake_tasks, "nofile", Bin),
-    eake_tasks:module_info().
+    EakefileBeam = filename:join("/tmp", hash(Source)),
+    file:write_file(EakefileBeam, Bin),
+    code:load_binary(eake_tasks, "nofile", Bin).
 
 %% returns {describe(Task) -> Description, and valid tokens}
 describe_function([], Acc, AccTokens) ->
@@ -143,3 +160,7 @@ walk_tasks([], Acc) ->
     Acc;
 walk_tasks([{Name, _}|T], Acc) ->
     walk_tasks(T, Acc ++ [{atom_to_list(Name), eake_tasks:describe(Name)}]).
+
+hash(Data) ->
+    <<X:160/integer>> = crypto:sha(Data),
+    integer_to_list(X, 16).
